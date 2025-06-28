@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
+const { exec } = require('child_process');
 
 function createWindow () {
   const mainWindow = new BrowserWindow({
@@ -13,14 +14,16 @@ function createWindow () {
     minHeight: 300,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: false,
-      nodeIntegration: true,
+      contextIsolation: true,
+      nodeIntegration: false,
       enableRemoteModule: false
     }
   });
 
   mainWindow.loadFile('index.html');
 }
+
+app.disableHardwareAcceleration();
 
 app.whenReady().then(() => {
   createWindow();
@@ -38,7 +41,29 @@ ipcMain.on('close-app', () => {
   app.quit();
 });
 
+ipcMain.on('show-alert', (event, message) => {
+  dialog.showMessageBox({
+    type: 'info',
+    message: message,
+    buttons: ['OK']
+  });
+});
+
+ipcMain.on('run-command', (event, command) => {
+  exec('gnome-terminal -- bash -c "' + command + '; exec bash"', (err, stdout, stderr) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    console.log(stdout);
+  });
+});
+
 ipcMain.on('set-shape', (event, shape) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   win.setShape(shape);
+});
+
+process.on('SIGINT', () => {
+  app.quit();
 });

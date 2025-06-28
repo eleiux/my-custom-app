@@ -1,4 +1,9 @@
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, contextBridge } = require('electron');
+
+contextBridge.exposeInMainWorld('electron', {
+  showAlert: (message) => ipcRenderer.send('show-alert', message),
+  runCommand: (command) => ipcRenderer.send('run-command', command)
+});
 
 window.addEventListener('DOMContentLoaded', () => {
   const closeBtn = document.getElementById('close-btn');
@@ -15,11 +20,13 @@ window.addEventListener('DOMContentLoaded', () => {
     replaceText(`${dependency}-version`, process.versions[dependency])
   }
 
-  const elements = [document.querySelector('h1'), document.querySelector('p'), document.getElementById('close-btn')];
+  const elements = [document.querySelector('h1'), document.querySelector('p'), document.getElementById('close-btn'), document.getElementById('bottom-box')];
   const shape = [];
   elements.forEach(element => {
-    const { x, y, width, height } = element.getBoundingClientRect();
-    shape.push({ x, y, width, height });
+    if (element) {
+      const { x, y, width, height } = element.getBoundingClientRect();
+      shape.push({ x, y, width, height });
+    }
   });
   ipcRenderer.send('set-shape', shape);
 });

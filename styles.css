@@ -8,15 +8,15 @@ body {
     background-color: transparent;
     color: white;
     flex-direction: column;
-    border: 2px solid white;
     border-radius: 10px;
     box-sizing: border-box;
 }
 
 #close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    display:block;
+    position: fixed;
+    top: calc(100vh - 35px);
+    left: 10px;
     cursor: pointer;
     font-size: 20px;
     font-weight: bold;
@@ -27,4 +27,29 @@ h1, p {
     backdrop-filter: blur(10px);
     padding: 20px;
     border-radius: 10px;
+}
+#bottom-box {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    height: 52px;
+    display: flex;
+    padding-top:2px;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+#bottom-box button {
+    background: transparent;
+    border: none;
+    height: 100%;
+    padding: 0 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#bottom-box button:hover{
+    background:rgba(0, 0, 0, 0.2);
 }
